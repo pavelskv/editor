@@ -1,0 +1,25 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavelskv/editor.git"
+  },
+  "author": "Pavel Shechkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pavelskv/editor/issues"
+  },
+  "homepage": "https://pavelskv.github.io/editor",
+  "description": "",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
