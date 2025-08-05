@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>WYSIWYG Редактор</title>
+  <link rel="stylesheet" href="styles/editor.css" />
+  <link rel="stylesheet" href="styles/styles.css" />
+
+  <style id="dynamic-styles"></style>
+</head>
+
+<body>
+  <!-- Панель инструментов -->
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <select id="projectSelect">
+        <option value="">Выберите проект</option>
+      </select>
+      <button onclick="createProject()" title="Новый проект">
+        <span>Новый проект</span>
+      </button>
+      <button onclick="saveDocument()" title="Сохранить документ">
+        <span>Сохранить</span>
+      </button>
+      <button onclick="exportProject()" title="Экспорт">
+        <span>Экспорт</span>
+      </button>
+      <button onclick="changeParagraphType()" title="Изменить тип абзаца">
+        <span>P↔H</span>
+      </button>
+      <button onclick="showModalDialog()" title="Создать модальное окно">
+        <span>MODAL</span>
+      </button>
+      <button onclick="document.execCommand('bold', false, null)" title="Жирный">
+        <span>B</span>
+      </button>
+      <button onclick="document.execCommand('italic', false, null)" title="Курсив">
+        <span>I</span>
+      </button>
+      <button onclick="document.execCommand('underline', false, null)" title="Подчеркнутый">
+        <span>U</span>
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <select id="paragraph-selector">
+        <option value="">Тип абзаца...</option>
+        <option value="p">Обычный абзац</option>
+        <option value="h1">Заголовок 1</option>
+        <option value="h2">Заголовок 2</option>
+        <option value="h3">Заголовок 3</option>
+        <option value="h4">Заголовок 4</option>
+        <option value="h5">Заголовок 5</option>
+        <option value="h6">Заголовок 6</option>
+      </select>
+      <button class="apply-btn" onclick="applyParagraphType()" title="Применить тип абзаца">
+        <span>Применить</span>
+      </button>
+      <button class="apply-btn" onclick="removeHeading()" title="Убрать заголовок">
+        <span>Убрать</span>
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <select id="class-selector">
+        <option value="">Выберите класс...</option>
+        <option value="highlight">Выделение</option>
+        <option value="code">Код</option>
+        <option value="red-text">Красный текст</option>
+        <option value="blue-text">Синий текст</option>
+        <option value="green-text">Зеленый текст</option>
+        <option value="large-text">Крупный текст</option>
+        <option value="small-text">Мелкий текст</option>
+      </select>
+      <button class="apply-btn" onclick="applyClass()" title="Применить класс">
+        <span>Применить</span>
+      </button>
+      <button class="apply-btn" onclick="changeClass()" title="Изменить класс">
+        <span>Изменить</span>
+      </button>
+      <button class="apply-btn" onclick="removeClass()" title="Убрать класс">
+        <span>Убрать</span>
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <select id="special-selector">
+        <option value="">Специальные выделения...</option>
+        <option value="definition">Определение</option>
+        <option value="note">Примечание</option>
+        <option value="warning">Внимание</option>
+      </select>
+      <button class="apply-btn" onclick="applySpecialClass()" title="Применить специальное выделение">
+        <span>Выделить</span>
+      </button>
+      <button class="apply-btn" onclick="changeSpecialClass()" title="Изменить тип выделения">
+        <span>Изменить</span>
+      </button>
+      <button class="apply-btn" onclick="removeSpecialClass()" title="Убрать специальное выделение">
+        <span>Убрать</span>
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <button onclick="document.getElementById('file-input').click()" title="Открыть документ">
+        <span>Открыть</span>
+      </button>
+      <input type="file" id="file-input" accept=".html" onchange="loadDocument(event)">
+      <button onclick="toggleView()" title="Просмотр кода" id="view-toggle-btn">
+        <span>Код</span>
+      </button>
+      <button onclick="toggleCSSEditor()" title="Редактор CSS">
+        <span>CSS</span>
+      </button>
+    </div>
+
+    <div class="toolbar-group">
+      <div class="dropdown">
+        <button onclick="showCommandsMenu()">Команды</button>
+        <div id="commandsDropdownMenu" class="dropdown-content">
+          <a onclick="clearAttributes()" href="#">Очистить атрибуты</a>
+          <a onclick="addClasses()" href="#">Добавить классы</a>
+        </div>
+      </div>
+      <button onclick="document.getElementById('file-input-docx').click()" title="Импорт DOCX">
+        Импорт DOCX
+      </button>
+      <input type="file" id="file-input-docx" onchange="importDocx(event)">
+    </div>
+    <div class="toolbar-group">
+      <button onclick="insertList('ul')" title="Маркированный список">
+        <span>• Список</span>
+      </button>
+      <button onclick="insertList('ol')" title="Нумерованный список">
+        <span>1. Список</span>
+      </button>
+      <button onclick="indentList()" title="Увеличить отступ">
+        <span>→</span>
+      </button>
+      <button onclick="outdentList()" title="Уменьшить отступ">
+        <span>←</span>
+      </button>
+      <button onclick="document.getElementById('image-upload').click()" title="Добавить изображение">
+        📷
+      </button>
+      <input type="file" id="image-upload" accept="image/*" onchange="uploadImage(event)" style="display: none;">
+    </div>​
+
+
+  </div>
+
+
+  <!-- Основная рабочая область -->
+  <div class="main-container">
+    <div class="editor-container">
+      <div class="panel">
+        <div class="panel-header">Редактор</div>
+        <div id="editor" contenteditable="true">
+          <h1>Добро пожаловать в WYSIWYG редактор</h1>
+          <p>Это <span class="highlight">визуальный редактор</span>, который позволяет:</p>
+          <p>Редактировать текст в режиме реального времени</p>
+          <p>Применять форматирование с помощью кнопок</p>
+          <p>Добавлять CSS классы к выделенному тексту</p>
+          <p>Настраивать стили через CSS редактор</p>
+          <p>Просматривать HTML код документа</p>
+          <p>Преобразовывать абзацы в заголовки и наоборот</p>
+          <p>Создавать модальные окна из выделенного текста</p>
+          <div class="definition">Это пример определения. Здесь можно разместить важную информацию о терминах и
+            понятиях.</div>
+          <div class="note">Это пример примечания. Здесь можно добавить дополнительную информацию или пояснения.</div>
+          <div class="warning">Это пример предупреждения. Здесь можно разместить важные замечания или предостережения.
+          </div>
+          <p>Попробуйте <strong>выделить этот текст</strong> и применить к нему класс!</p>
+          <p>Также попробуйте применить <span class="code">код</span> к выделенному тексту!</p>
+        </div>
+        <pre id="code-view"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Диалог модального окна -->
+  <div class="modal-dialog" id="modal-dialog">
+    <div class="modal-dialog-header">Создать модальное окно</div>
+    <div class="dialog-body">
+      <input type="text" id="modal-id" placeholder="ID модального окна" value="modal-1">
+      <input type="text" id="modal-button-text" placeholder="Текст на кнопке" value="Открыть модальное окно">
+    </div>
+    <div class="dialog-footer">
+      <button class="cancel-btn" onclick="closeModalDialog()">Отмена</button>
+      <button class="ok-btn" onclick="createModal()">Создать</button>
+    </div>
+  </div>
+
+  <!-- Диалог для пользовательских классов -->
+  <div class="class-dialog" id="class-name-dialog">
+    <div class="class-dialog-header">Название для класса</div>
+    <div class="dialog-body">
+      <p>Найден новый CSS класс. Введите название для отображения в списке:</p>
+      <div id="class-list-container"></div>
+    </div>
+    <div class="dialog-footer">
+      <button class="ok-btn" onclick="saveClassNames()">Сохранить</button>
+    </div>
+  </div>
+
+  <!-- CSS Редактор (скрыт по умолчанию) -->
+  <div class="css-panel" id="cssPanel">
+    <div class="css-header">
+      <span>Редактор CSS</span>
+      <button class="close-btn" onclick="toggleCSSEditor()">&times;</button>
+    </div>
+    <textarea id="css-editor">/* Стили по умолчанию */
+.highlight {
+  background-color: #fff3cd;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.code {
+  font-family: 'Courier New', monospace;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.red-text {
+  color: #e74c3c;
+}
+
+.blue-text {
+  color: #3498db;
+}
+
+.green-text {
+  color: #27ae60;
+}
+
+.large-text {
+  font-size: 24px;
+}
+
+.small-text {
+  font-size: 12px;
+}
+
+/* Стили для специальных выделений */
+.definition {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.definition::before {
+  content: "Определение: ";
+  font-weight: bold;
+  color: #2196f3;
+}
+
+.note {
+  background-color: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.note::before {
+  content: "Примечание: ";
+  font-weight: bold;
+  color: #ffc107;
+}
+
+.warning {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.warning::before {
+  content: "Внимание: ";
+  font-weight: bold;
+  color: #f44336;
+}
+
+/* Пример пользовательского класса */
+.custom-class {
+  color: purple;
+  font-weight: bold;
+}</textarea>
+    <div class="css-footer">
+      <button class="save-btn" onclick="saveCSS()">Сохранить</button>
+      <button class="cancel-btn" onclick="toggleCSSEditor()">Отмена</button>
+    </div>
+  </div>
+
+  <!-- Оверлей -->
+  <div class="overlay" id="overlay" onclick="closeAllDialogs()"></div>
+
+  <!-- Сообщения -->
+  <div class="message" id="message"></div>
+
+  <script src="scripts/editor.js"></script>
+  <script src="scripts/mammoth.browser.js"></script>
+</body>
+
+</html>
